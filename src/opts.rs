@@ -5,7 +5,6 @@ use std::{
     str::FromStr,
 };
 
-
 #[derive(Debug, Parser)]
 #[clap(name = "rcli", version, author, about, long_about)]
 pub struct Opts {
@@ -16,6 +15,8 @@ pub struct Opts {
 pub enum SubCommand {
     #[clap(name = "csv", about = "Show csv, or convert to other formats")]
     Csv(CsvOpts),
+    #[clap(name = "genpass", about = "generate random password")]
+    GenPass(GenPassOpts),
 }
 
 #[derive(Debug, Parser)]
@@ -36,6 +37,25 @@ pub struct CsvOpts {
     pub format: OutputFormat,
 }
 
+#[derive(Debug, Parser)]
+pub struct GenPassOpts {
+    /// password长度
+    #[arg(short, long, default_value_t = 16)]
+    pub length: u8,
+    /// 是否包含大写字母
+    #[arg(long, default_value_t = true)]
+    pub uppercase: bool,
+    /// 是否包含小写字母
+    #[arg(long, default_value_t = true)]
+    pub lowercase: bool,
+    /// 是否包含数字
+    #[arg(short, long, default_value_t = true)]
+    pub number: bool,
+    /// 是否包含特殊字符
+    #[arg(short, long, default_value_t = true)]
+    pub symbol: bool,
+}
+
 #[derive(Debug, Clone, Copy)]
 pub enum OutputFormat {
     Json,
@@ -49,7 +69,6 @@ impl Display for OutputFormat {
         // write!(f, "{}", Into::<&'static str>::into(*self))
         write!(f, "{}", Into::<&str>::into(*self))
     }
-
 }
 
 fn verify_input_file(filename: &str) -> Result<String, &'static str> {
@@ -85,4 +104,3 @@ impl FromStr for OutputFormat {
         }
     }
 }
-
