@@ -1,9 +1,8 @@
-use std::fs;
+use crate::opts::OutputFormat;
 use csv::ReaderBuilder;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use crate::opts::OutputFormat;
-
+use std::fs;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
