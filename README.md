@@ -83,3 +83,16 @@ fn main() {
 }
 
 ```
+
+
+## 代码提交
+主分支
+pre-commit install
+git add .
+git commit -a
+
+
+其它分支
+git checkout -b branch-name
+git add .
+git commit -a
