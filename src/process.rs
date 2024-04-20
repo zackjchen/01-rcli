@@ -1,10 +1,9 @@
 use std::fs;
-
 use csv::ReaderBuilder;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-
 use crate::opts::OutputFormat;
+
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "UPPERCASE")]
@@ -48,5 +47,6 @@ pub fn process_csv(
     };
 
     fs::write(output, content)?;
+
     Ok(())
 }

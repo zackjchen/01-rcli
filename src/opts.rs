@@ -5,6 +5,7 @@ use std::{
     str::FromStr,
 };
 
+
 #[derive(Debug, Parser)]
 #[clap(name = "rcli", version, author, about, long_about)]
 pub struct Opts {
@@ -24,6 +25,7 @@ pub struct CsvOpts {
     /// default_value默认值，传字符串然后由Parser convert
     #[arg(short, long, /*default_value = "output.json"*/)]
     pub output: Option<String>,
+
     #[arg(short, long, default_value_t = ',')]
     pub delimiter: char,
     /// default_value_t不需要转换直接写rust的类型
@@ -47,6 +49,7 @@ impl Display for OutputFormat {
         // write!(f, "{}", Into::<&'static str>::into(*self))
         write!(f, "{}", Into::<&str>::into(*self))
     }
+
 }
 
 fn verify_input_file(filename: &str) -> Result<String, &'static str> {
@@ -82,3 +85,4 @@ impl FromStr for OutputFormat {
         }
     }
 }
+

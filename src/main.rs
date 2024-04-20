@@ -5,6 +5,7 @@ use clap::Parser;
 use rcli::opts::{Opts, SubCommand};
 use rcli::process::process_csv;
 
+
 fn main() -> anyhow::Result<()> {
     let opts = Opts::parse();
 
