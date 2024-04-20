@@ -1,6 +1,7 @@
 use rand::seq::SliceRandom;
 use zxcvbn::zxcvbn;
 
+
 const UPPER: &[u8] = b"ABCDEFGHJKLMNPQRSTUVWXYZ";
 const LOWER: &[u8] = b"abcdefghjklmnopqrstuvwxyz";
 const NUMBER: &[u8] = b"123456789";
