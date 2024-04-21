@@ -1,4 +1,4 @@
-use super::verify_input_file;
+use super::verify_file;
 use std::{
     fmt::{self, Display},
     str::FromStr,
@@ -8,7 +8,7 @@ use clap::Parser;
 
 #[derive(Debug, Parser)]
 pub struct CsvOpts {
-    #[arg(short, long, value_parser=verify_input_file)]
+    #[arg(short, long, value_parser=verify_file)]
     pub input: String,
     /// default_value默认值，传字符串然后由Parser convert
     #[arg(short, long, /*default_value = "output.json"*/)]

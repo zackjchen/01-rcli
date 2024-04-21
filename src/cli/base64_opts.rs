@@ -3,7 +3,7 @@ use std::{
     str::FromStr,
 };
 
-use super::verify_input_file;
+use super::verify_file;
 use clap::Parser;
 
 #[derive(Parser, Debug)]
@@ -16,7 +16,7 @@ pub enum Base64SubCommand {
 #[derive(Parser, Debug)]
 pub struct Base64EncodeOpts {
     /// 输入文件路径， 默认值'-'代表从标准输入读取
-    #[clap(short, long, value_parser=verify_input_file, default_value = "-")]
+    #[clap(short, long, value_parser=verify_file, default_value = "-")]
     pub input: String,
     /// format, optional: [standard, urlsafe]
     #[clap(long, value_parser = parse_base64_format, default_value = "standard")]

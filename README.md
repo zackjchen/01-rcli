@@ -93,6 +93,16 @@ git commit -a
 
 
 其它分支
-git checkout -b branch-name
+git checkout -b branch-name // 新建并切换，去掉-b切换到已有分支
 git add .
 git commit -a
+git branch -D new-features// 删除分支
+
+提交一个tag
+git tag -a v1-base64
+git push -u origin v1-base64
+
+
+##  !注
+文件save的时候 command+shift+p 选择 save without formatting
+否则会多出一行

@@ -1,5 +1,4 @@
 use rand::seq::SliceRandom;
-use zxcvbn::zxcvbn;
 
 const UPPER: &[u8] = b"ABCDEFGHJKLMNPQRSTUVWXYZ";
 const LOWER: &[u8] = b"abcdefghjklmnopqrstuvwxyz";
@@ -12,7 +11,7 @@ pub fn process_genpass(
     lower: bool,
     number: bool,
     symbol: bool,
-) -> anyhow::Result<()> {
+) -> anyhow::Result<String> {
     let mut rng = rand::thread_rng();
     let mut password = Vec::new();
     let mut chars = Vec::new();
@@ -59,11 +58,5 @@ pub fn process_genpass(
     password.shuffle(&mut rng);
     let password = String::from_utf8(password).unwrap();
 
-    // output the password strength
-    let estimate = zxcvbn(&password, &[]).unwrap();
-    println!("{}", password);
-    // 这种print的方式是为了在 rcli genpass -> output.txt 时候，只保存密码, 不保存这个信息
-    eprintln!("password strength: {}", estimate.score());
-
-    Ok(())
+    Ok(password)
 }
