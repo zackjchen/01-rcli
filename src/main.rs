@@ -6,17 +6,19 @@ use std::fs;
 use clap::Parser;
 use rcli::{
     cli::{
+        http::HttpSubCommand,
         text::{TextSignFormat, TextSubCommand},
         Base64SubCommand, Opts, SubCommand,
     },
     process::{
-        process_csv, process_decode, process_encode, process_genpass, process_text_generate,
-        process_text_sign, process_text_verify,
+        process_csv, process_decode, process_encode, process_genpass, process_http_serve,
+        process_text_generate, process_text_sign, process_text_verify,
     },
 };
 use zxcvbn::zxcvbn;
-
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt::init();
     let opts = Opts::parse();
 
     match opts.cmd {
@@ -89,6 +91,14 @@ fn main() -> anyhow::Result<()> {
                             fs::write(path.join("ed25519.pk"), &key[1])?;
                         }
                     }
+                }
+            }
+        }
+        SubCommand::Http(subcmd) => {
+            match subcmd {
+                HttpSubCommand::Serve(opts) => {
+                    // eprintln!("Serving as http://0.0.0.0:{:?}", &opts.port);
+                    process_http_serve(opts.dir, opts.port).await?;
                 }
             }
         }

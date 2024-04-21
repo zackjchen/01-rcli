@@ -1,14 +1,14 @@
 use clap::{Parser, Subcommand};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 pub mod base64_opts;
 pub mod csv_opts;
 pub mod genpass_opts;
+pub mod http;
 pub mod text;
+use self::{http::HttpSubCommand, text::TextSubCommand};
 pub use base64_opts::Base64SubCommand;
 pub use csv_opts::CsvOpts;
 pub use genpass_opts::GenPassOpts;
-
-use self::text::TextSubCommand;
 
 #[derive(Debug, Parser)]
 #[clap(name = "rcli", version, author, about, long_about)]
@@ -32,6 +32,9 @@ pub enum SubCommand {
     /// text subcommand, support text cryptographic hash
     #[clap(subcommand)]
     Text(TextSubCommand),
+    // serve http server
+    #[clap(subcommand)]
+    Http(HttpSubCommand),
 }
 
 fn verify_file(filename: &str) -> Result<String, &'static str> {
@@ -39,6 +42,14 @@ fn verify_file(filename: &str) -> Result<String, &'static str> {
         Ok(filename.to_string())
     } else {
         Err("File not found")
+    }
+}
+fn verify_path(path: &str) -> Result<PathBuf, &'static str> {
+    let p = PathBuf::from(path);
+    if p.exists() && p.is_dir() {
+        Ok(p)
+    } else {
+        Err("Path does not exist or is not a directory")
     }
 }
 

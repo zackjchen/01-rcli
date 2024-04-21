@@ -1,8 +1,10 @@
 mod csv_convert;
 mod gen_pass;
+mod http_serve;
 mod process_base64;
 mod text;
 pub use csv_convert::*;
 pub use gen_pass::*;
+pub use http_serve::*;
 pub use process_base64::*;
 pub use text::*;

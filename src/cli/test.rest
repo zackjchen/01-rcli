@@ -1,0 +1,16 @@
+### test index page
+
+GET http://localhost:8080/cargo.toml
+
+
+### test static file
+GET http://localhost:8080/name.txt
+
+
+### test nest file
+
+GET http://localhost:8080/src/main.rs
+
+
+### test read binarry file
+GET http://localhost:8080/fixtures/ed25519.sk

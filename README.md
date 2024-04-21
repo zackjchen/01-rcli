@@ -106,3 +106,13 @@ git push -u origin v1-base64
 ##  !注
 文件save的时候 command+shift+p 选择 save without formatting
 否则会多出一行
+
+
+vscode 插件 rest client
+作用: 可以直接写http请求做测试
+文件后缀: .rest
+
+
+Path和PathBuf
+Path: 相当于&str
+PathBuf: 相当于具有ownership的String

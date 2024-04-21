@@ -8,6 +8,7 @@ authors = ["Zack Chen <chenjia0101@foxmai.com>"]
 
 [dependencies]
 anyhow = "1.0.81"
+axum = { version = "0.7.5", features = ["http2", "query", "tracing"] }
 base64 = "0.22.0"
 blake3 = "1.5.1"
 clap = { version = "4.5.4", features = ["derive"] }
@@ -17,7 +18,10 @@ rand = "0.8.5"
 serde = { version = "1.0.197", features = ["derive"] }
 serde_json = "1.0.115"
 serde_yaml = "0.9.34"
+tokio = { version = "1.37.0", features = ["rt-multi-thread", "rt", "net", "fs", "macros"] }
 toml = "0.8.12"
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 zxcvbn = "2.2.2"
 
 # [features]

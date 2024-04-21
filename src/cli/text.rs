@@ -1,4 +1,4 @@
-use super::verify_file;
+use super::{verify_file, verify_path};
 use clap::Parser;
 use std::{fmt::Display, path::PathBuf, str::FromStr};
 
@@ -89,14 +89,5 @@ impl From<TextSignFormat> for &'static str {
 impl Display for TextSignFormat {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", Into::<&str>::into(*self))
-    }
-}
-
-fn verify_path(path: &str) -> Result<PathBuf, &'static str> {
-    let p = PathBuf::from(path);
-    if p.exists() && p.is_dir() {
-        Ok(p)
-    } else {
-        Err("Path does not exist or is not a directory")
     }
 }
