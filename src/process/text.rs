@@ -220,8 +220,8 @@ mod test {
 
     #[test]
     fn test_blake3_sign_verify() -> Result<()> {
-        let signer = Blake3::load("fixtures/blake3.txt")?;
-        let verifier = Blake3::load("fixtures/blake3.txt")?;
+        let signer = Blake3::load("./fixtures/blake3.txt")?;
+        let verifier = Blake3::load("./fixtures/blake3.txt")?;
         let data = b"hello world";
         let sign = signer.sign(&mut &data[..])?;
         let signed = URL_SAFE_NO_PAD.encode(sign);
@@ -232,10 +232,10 @@ mod test {
     }
     #[test]
     fn test_ed25519_sign_verify() -> Result<()> {
-        let signer = Ed25519Signer::load("fixtures/ed25519.sk")?;
+        let signer = Ed25519Signer::load("./fixtures/ed25519.sk")?;
         let data = b"hello world";
         let sign = signer.sign(&mut &data[..])?;
-        let verifier: Ed25519Verifier = Ed25519Verifier::load("fixtures/ed25519.pk")?;
+        let verifier: Ed25519Verifier = Ed25519Verifier::load("./fixtures/ed25519.pk")?;
         let verify_res = verifier.verify(&mut &data[..], &sign)?;
         assert!(verify_res);
         Ok(())

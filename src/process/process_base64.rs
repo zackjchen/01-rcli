@@ -37,14 +37,14 @@ mod test {
     use super::*;
     #[test]
     fn test_process_encode() {
-        let input = "fixtures/test.csv";
+        let input = "./fixtures/test.csv";
         let format = Base64Format::Standard;
         process_encode(input, format).unwrap();
     }
 
     #[test]
     fn test_process_decode() {
-        let input = "fixtures/test.txt";
+        let input = "./fixtures/test.txt";
         let format = Base64Format::Standard;
         process_decode(input, format).unwrap();
     }

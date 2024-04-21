@@ -35,7 +35,7 @@ pub enum SubCommand {
 }
 
 fn verify_file(filename: &str) -> Result<String, &'static str> {
-    if Path::new(filename).exists() || filename == "-" {
+    if filename == "-" || Path::new(filename).exists() {
         Ok(filename.to_string())
     } else {
         Err("File not found")
@@ -48,9 +48,9 @@ mod tests {
 
     #[test]
     fn test_verify_input_file() {
-        let filename = "Cargo.toml";
+        let filename = "./Cargo.toml";
         assert_eq!(verify_file(filename), Ok(filename.to_string()));
-        let filename = "Cargo.toml1";
+        let filename = "./Cargo.toml1";
         assert_eq!(verify_file(filename), Err("File not found"));
         let filename = "-";
         assert_eq!(verify_file(filename), Ok(filename.to_string()));
