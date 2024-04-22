@@ -5,16 +5,15 @@ pub mod csv_opts;
 pub mod genpass_opts;
 pub mod http;
 pub mod text;
+use self::{http::HttpSubCommand, text::TextSubCommand};
 use crate::{
     process::{process_csv, process_genpass},
     CmdExcuter,
 };
-use zxcvbn::zxcvbn;
-
-use self::{http::HttpSubCommand, text::TextSubCommand};
 pub use base64_opts::Base64SubCommand;
 pub use csv_opts::CsvOpts;
 pub use genpass_opts::GenPassOpts;
+use zxcvbn::zxcvbn;
 
 #[derive(Debug, Parser)]
 #[clap(name = "rcli", version, author, about, long_about)]

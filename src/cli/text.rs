@@ -1,9 +1,8 @@
+use super::{verify_file, verify_path};
 use crate::{
     process::{process_text_generate, process_text_sign, process_text_verify},
     CmdExcuter,
 };
-
-use super::{verify_file, verify_path};
 use clap::Parser;
 use std::{fmt::Display, fs, path::PathBuf, str::FromStr};
 
