@@ -1,5 +1,4 @@
 ### test index page
-
 GET http://localhost:8080/cargo.toml
 
 
@@ -8,9 +7,14 @@ GET http://localhost:8080/name.txt
 
 
 ### test nest file
-
 GET http://localhost:8080/src/main.rs
 
 
 ### test read binarry file
 GET http://localhost:8080/fixtures/ed25519.sk
+
+
+### test 获取0-100字节
+GET http://localhost:8080/aaa/src/lib.rs
+Range: bytes=0-10
+# Accept-Encoding: zstd

@@ -2,12 +2,12 @@ use anyhow::Result;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
-    response::IntoResponse,
     routing::get,
     Router,
 };
 use std::{path::PathBuf, sync::Arc};
 use tokio::net::TcpListener;
+use tower_http::services::ServeDir;
 use tracing::info;
 
 #[derive(Debug)]
@@ -19,11 +19,18 @@ pub async fn process_http_serve(path: PathBuf, port: u16) -> Result<()> {
     let listener = TcpListener::bind(format!("0.0.0.0:{}", port)).await?;
     info!("serve http server at port: {}, with path: {:?}", port, path);
 
-    let shared_state = HttpServeState { path };
+    let shared_state = HttpServeState { path: path.clone() };
+    let dir_service = ServeDir::new(path)
+        .append_index_html_on_directories(true)
+        .precompressed_gzip()
+        .precompressed_br()
+        .precompressed_deflate()
+        .precompressed_zstd();
 
     // axum router
     let router = Router::new()
         .route("/*path", get(file_handler))
+        .nest_service("/tower", dir_service)
         .with_state(Arc::new(shared_state));
 
     axum::serve(listener, router).await?;
@@ -34,7 +41,7 @@ pub async fn process_http_serve(path: PathBuf, port: u16) -> Result<()> {
 async fn file_handler(
     State(shared_data): State<Arc<HttpServeState>>,
     Path(path): Path<String>,
-) -> impl IntoResponse {
+) -> (StatusCode, String) {
     format!(
         "Hello, the path is {:?}, current access url:{:?}",
         shared_data, path
@@ -58,5 +65,24 @@ async fn file_handler(
                 format!("Read file error: {:?}", e),
             ),
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::process::http_serve::file_handler;
+    use axum::extract::State;
+    use std::sync::Arc;
+
+    #[tokio::test]
+    async fn test_file_handler() {
+        // todo
+        let state = super::HttpServeState {
+            path: std::path::PathBuf::from("./"),
+        };
+        let path = axum::extract::Path("Cargo.toml".to_string());
+        let (status_code, content) = file_handler(State(Arc::new(state)), path).await;
+        assert_eq!(status_code, 200);
+        println!("{:?}", content);
     }
 }
