@@ -2,6 +2,8 @@ use std::path::PathBuf;
 
 use clap::Parser;
 
+use crate::{process::process_http_serve, CmdExcuter};
+
 use super::verify_path;
 
 #[derive(Debug, Parser)]
@@ -9,7 +11,17 @@ pub enum HttpSubCommand {
     #[clap(name = "serve", about = "Serve a http server")]
     Serve(HttpServeOpts),
 }
-
+impl CmdExcuter for HttpSubCommand {
+    async fn execute(self) -> anyhow::Result<()> {
+        match self {
+            HttpSubCommand::Serve(opts) => {
+                eprintln!("opts: {:?}", &opts);
+                process_http_serve(opts.dir, opts.port).await?;
+            }
+        };
+        Ok(())
+    }
+}
 #[derive(Debug, Parser)]
 pub struct HttpServeOpts {
     /// port,default is 8080

@@ -5,6 +5,12 @@ pub mod csv_opts;
 pub mod genpass_opts;
 pub mod http;
 pub mod text;
+use crate::{
+    process::{process_csv, process_genpass},
+    CmdExcuter,
+};
+use zxcvbn::zxcvbn;
+
 use self::{http::HttpSubCommand, text::TextSubCommand};
 pub use base64_opts::Base64SubCommand;
 pub use csv_opts::CsvOpts;
@@ -35,6 +41,48 @@ pub enum SubCommand {
     // serve http server
     #[clap(subcommand)]
     Http(HttpSubCommand),
+}
+
+impl CmdExcuter for SubCommand {
+    async fn execute(self) -> anyhow::Result<()> {
+        match self {
+            SubCommand::Csv(opts) => {
+                let output = if let Some(output) = &opts.output {
+                    output.clone()
+                } else {
+                    format!("output.{}", opts.format)
+                };
+                eprintln!("opts: {:?}", &opts);
+                process_csv(
+                    &opts.input,
+                    &output,
+                    opts.delimiter,
+                    opts.header,
+                    opts.format,
+                )?;
+            }
+            SubCommand::GenPass(opts) => {
+                eprintln!("opts: {:?}", &opts);
+                let password = process_genpass(
+                    opts.length,
+                    opts.uppercase,
+                    opts.lowercase,
+                    opts.number,
+                    opts.symbol,
+                )?;
+                // 不要换行, 不然save的时候会有换行
+                print!("{}", password);
+                // output the password strength
+                let estimate = zxcvbn(&password, &[]).unwrap();
+                // 这种print的方式是为了在 rcli genpass -> output.txt 时候，只保存密码, 不保存这个信息
+                eprintln!("password strength: {}", estimate.score());
+            }
+            SubCommand::Base64(subcmd) => subcmd.execute().await?,
+            SubCommand::Text(subcmd) => subcmd.execute().await?,
+            SubCommand::Http(subcmd) => subcmd.execute().await?,
+        }
+        Ok(())
+    }
 }
 
 fn verify_file(filename: &str) -> Result<String, &'static str> {

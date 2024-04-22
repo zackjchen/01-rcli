@@ -116,3 +116,7 @@ vscode 插件 rest client
 Path和PathBuf
 Path: 相当于&str
 PathBuf: 相当于具有ownership的String
+
+
+cargo 添加自己写的cli工具
+cargo install --path .

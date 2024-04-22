@@ -3,6 +3,11 @@ use std::{
     str::FromStr,
 };
 
+use crate::{
+    process::{process_decode, process_encode},
+    CmdExcuter,
+};
+
 use super::verify_file;
 use clap::Parser;
 
@@ -12,6 +17,24 @@ pub enum Base64SubCommand {
     Encode(Base64EncodeOpts),
     #[clap(name = "decode", about = "Decode base64 string")]
     Decode(Base64DecodeOpts),
+}
+
+impl CmdExcuter for Base64SubCommand {
+    async fn execute(self) -> anyhow::Result<()> {
+        match self {
+            Base64SubCommand::Encode(opts) => {
+                eprintln!("opts: {:?}", &opts);
+                let encoded = process_encode(&opts.input, opts.format)?;
+                eprintln!("{}", encoded)
+            }
+            Base64SubCommand::Decode(opts) => {
+                eprintln!("opts: {:?}", &opts);
+                let decoded = process_decode(&opts.input, opts.format)?;
+                eprintln!("{}", decoded)
+            }
+        }
+        Ok(())
+    }
 }
 #[derive(Parser, Debug)]
 pub struct Base64EncodeOpts {

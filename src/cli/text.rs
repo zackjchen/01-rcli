@@ -1,6 +1,11 @@
+use crate::{
+    process::{process_text_generate, process_text_sign, process_text_verify},
+    CmdExcuter,
+};
+
 use super::{verify_file, verify_path};
 use clap::Parser;
-use std::{fmt::Display, path::PathBuf, str::FromStr};
+use std::{fmt::Display, fs, path::PathBuf, str::FromStr};
 
 #[derive(Debug, Parser)]
 pub enum TextSubCommand {
@@ -11,7 +16,38 @@ pub enum TextSubCommand {
     #[clap(name = "generate", about = "Generate a key for signing")]
     Generate(TextKeyGenerateOpts),
 }
-
+impl CmdExcuter for TextSubCommand {
+    async fn execute(self) -> anyhow::Result<()> {
+        eprintln!("subcmd: {:?}", &self);
+        match self {
+            TextSubCommand::Sign(opts) => {
+                let signed = process_text_sign(&opts.input, &opts.key, opts.format)?;
+                print!("{:x?}", signed);
+            }
+            TextSubCommand::Verify(opts) => {
+                let verified =
+                    process_text_verify(&opts.input, &opts.key, &opts.signiture, opts.format)?;
+                eprintln!("verified: {}", verified);
+            }
+            TextSubCommand::Generate(opts) => {
+                let key = process_text_generate(opts.format)?;
+                match opts.format {
+                    TextSignFormat::Blake3 => {
+                        let path = opts.output.join("blake3.txt");
+                        fs::write(path, &key[0])?;
+                    }
+                    TextSignFormat::Ed25519 => {
+                        // 不能写入不存在的dir
+                        let path = &opts.output;
+                        fs::write(path.join("ed25519.sk"), &key[0])?;
+                        fs::write(path.join("ed25519.pk"), &key[1])?;
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+}
 #[derive(Debug, Parser)]
 pub struct TextSignOpts {
     /// 输入文件路径， 默认值'-'代表从标准输入读取
