@@ -2,6 +2,7 @@ use anyhow::Result;
 use axum::{
     extract::{Path, State},
     http::StatusCode,
+    response::Html,
     routing::get,
     Router,
 };
@@ -29,6 +30,7 @@ pub async fn process_http_serve(path: PathBuf, port: u16) -> Result<()> {
 
     // axum router
     let router = Router::new()
+        .route("/", get(handle_index))
         .route("/*path", get(file_handler))
         .nest_service("/tower", dir_service)
         .with_state(Arc::new(shared_state));
@@ -41,31 +43,61 @@ pub async fn process_http_serve(path: PathBuf, port: u16) -> Result<()> {
 async fn file_handler(
     State(shared_data): State<Arc<HttpServeState>>,
     Path(path): Path<String>,
-) -> (StatusCode, String) {
-    format!(
-        "Hello, the path is {:?}, current access url:{:?}",
-        shared_data, path
-    );
+) -> (StatusCode, Html<String>) {
     let p = std::path::Path::new(&shared_data.path).join(path);
     info!("access path: {:?}", p);
     if !p.exists() {
         info!("file not found: {:?}", p);
         (
             StatusCode::NOT_FOUND,
-            format!("File {:?} Not Found", p.display()),
+            Html(format!("File not found: {:?}", p)),
         )
+    } else if p.is_dir() {
+        let s = list_dir_items(&p);
+        (StatusCode::OK, Html(s))
     } else {
         match tokio::fs::read_to_string(p).await {
             Ok(f) => {
                 info!("read bytes length: {:?}", f.len());
-                (StatusCode::OK, f)
+                (StatusCode::OK, Html(f))
             }
             Err(e) => (
                 StatusCode::INTERNAL_SERVER_ERROR,
-                format!("Read file error: {:?}", e),
+                Html(format!("Read file error: {:?}", e)),
             ),
         }
     }
+}
+
+async fn handle_index(
+    State(shared_data): State<Arc<HttpServeState>>,
+) -> (StatusCode, Html<String>) {
+    let s = list_dir_items(&shared_data.path);
+    (StatusCode::OK, Html(s))
+}
+
+fn list_dir_items(p: &PathBuf) -> String {
+    let mut lis = String::new();
+    for entry in std::fs::read_dir(p).unwrap() {
+        let entry = entry.unwrap();
+        println!("{:?}", entry.path());
+        let url: String = entry.path().to_str().unwrap().to_string();
+        lis.push_str(&format!(
+            "<li><a href=http://localhost:8080/{}>{}</a></li></br>",
+            url, url
+        ));
+    }
+    let s = format!(
+        r"
+      <h1>List directory {}</h1>
+        <ul>
+        {}
+        </ul>
+    ",
+        p.display(),
+        lis
+    );
+    s
 }
 
 #[cfg(test)]
