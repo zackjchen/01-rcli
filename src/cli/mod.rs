@@ -4,8 +4,9 @@ pub mod base64_opts;
 pub mod csv_opts;
 pub mod genpass_opts;
 pub mod http;
+pub mod jwt_ops;
 pub mod text;
-use self::{http::HttpSubCommand, text::TextSubCommand};
+use self::{http::HttpSubCommand, jwt_ops::JwtSubCommand, text::TextSubCommand};
 use crate::{
     process::{process_csv, process_genpass},
     CmdExcuter,
@@ -37,9 +38,13 @@ pub enum SubCommand {
     /// text subcommand, support text cryptographic hash
     #[clap(subcommand)]
     Text(TextSubCommand),
-    // serve http server
+    /// serve http server
     #[clap(subcommand)]
     Http(HttpSubCommand),
+
+    /// jwt encode and verify
+    #[clap(subcommand)]
+    Jwt(JwtSubCommand),
 }
 
 impl CmdExcuter for SubCommand {
@@ -79,6 +84,7 @@ impl CmdExcuter for SubCommand {
             SubCommand::Base64(subcmd) => subcmd.execute().await?,
             SubCommand::Text(subcmd) => subcmd.execute().await?,
             SubCommand::Http(subcmd) => subcmd.execute().await?,
+            SubCommand::Jwt(subcmd) => subcmd.execute().await?,
         }
         Ok(())
     }
