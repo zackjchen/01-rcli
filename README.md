@@ -2,6 +2,34 @@
 
 rcli is a rust CLI tool
 
+## 第一周作业
+### 作业1
+```shell
+# 生成Key, 这里必须要一个output的路径
+rcli text generate --format chacha20 -o fixtures/
+
+# encrypt 到一个文件, 输出Base64编码后的结果
+rcli text encrypt -i Cargo.toml -k ./fixtures/chacha20.txt > fixtures/cargo_toml.txt
+
+# decode 刚刚encrypt输出的文件
+rcli text decrypt -k fixtures/chacha20.txt -i fixtures/cargo_toml.txt
+```
+### 作业2
+```shell
+rcli jwt sign -s ACME -e 1 -a dervice1
+# 这一次的输出 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBQ01FIiwiZXhwIjoxNzE0MTU5ODkwLCJhdWQiOiJkZXJ2aWNlMSJ9.3AHjmuXLSHihkAeyBmKRRhU04-IZtkkHHq-6yK0qisI
+
+rcli jwt verify -t eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBQ01FIiwiZXhwIjoxNzE0MTYwMzQ3LCJhdWQiOiJIS0pDIn0.bmmAb1WlJSRYYYY77KD-aUWuTMpsES-cz8U3Ip40FiM
+# verify pass, data:Claims { sub: "ACME", exp: 1714160347, aud: "HKJC" }
+
+
+```
+
+### 作业三
+```
+rcli http serve
+```
+<a href="http://localhost:8080/">http://localhost:8080/</a>
 ## Clap
 clap 有两种写cli的方式，
 第一种是builder的方式
@@ -102,6 +130,11 @@ git branch -D new-features// 删除分支
 git tag -a v1-base64
 git push -u origin v1-base64
 
+当git add 一个文件还没有提交时, 撤出这个被add的文件
+git reset -p path
+
+丢弃所有修改，并且不能恢复
+git restore .
 
 ##  !注
 文件save的时候 command+shift+p 选择 save without formatting
