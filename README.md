@@ -17,16 +17,17 @@ rcli text decrypt -k fixtures/chacha20.txt -i fixtures/cargo_toml.txt
 ### 作业2
 ```shell
 rcli jwt sign -s ACME -e 1 -a dervice1
-# 这一次的输出 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBQ01FIiwiZXhwIjoxNzE0MTU5ODkwLCJhdWQiOiJkZXJ2aWNlMSJ9.3AHjmuXLSHihkAeyBmKRRhU04-IZtkkHHq-6yK0qisI
+# 这一次的输出 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBQ01FIiwiZXhwIjoxNzE0MTYxNTM3LCJhdWQiOiJkZXZpY2UxIn0.yYARr1jlyElNgT7XXtKv4NagJK-s_SK6t5LpgIbxBPs
 
 rcli jwt verify -t eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJBQ01FIiwiZXhwIjoxNzE0MTYwMzQ3LCJhdWQiOiJIS0pDIn0.bmmAb1WlJSRYYYY77KD-aUWuTMpsES-cz8U3Ip40FiM
-# verify pass, data:Claims { sub: "ACME", exp: 1714160347, aud: "HKJC" }
+# verify pass, data:Claims { sub: "ACME", exp: 1714161537, aud: "device1" }
 
 
 ```
 
 ### 作业三
-```
+```shell
+# 文件的空格和换行被压缩了，Html()包裹的时候因该加上Html的格式的
 rcli http serve
 ```
 <a href="http://localhost:8080/">http://localhost:8080/</a>
