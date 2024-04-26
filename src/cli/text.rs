@@ -1,6 +1,9 @@
 use super::{verify_file, verify_path};
 use crate::{
-    process::{process_text_generate, process_text_sign, process_text_verify},
+    process::{
+        process_text_decrypt, process_text_encrypt, process_text_generate, process_text_sign,
+        process_text_verify,
+    },
     CmdExcuter,
 };
 use clap::Parser;
@@ -14,6 +17,10 @@ pub enum TextSubCommand {
     Verify(TextVerifyOpts),
     #[clap(name = "generate", about = "Generate a key for signing")]
     Generate(TextKeyGenerateOpts),
+    #[clap(name = "encrypt", about = "encrypt a message with a key")]
+    Encrypt(TextEncryptOpts),
+    #[clap(name = "decrypt", about = "decrypt a message with a key")]
+    Decrypt(TextDecryptOpts),
 }
 impl CmdExcuter for TextSubCommand {
     async fn execute(self) -> anyhow::Result<()> {
@@ -41,7 +48,19 @@ impl CmdExcuter for TextSubCommand {
                         fs::write(path.join("ed25519.sk"), &key[0])?;
                         fs::write(path.join("ed25519.pk"), &key[1])?;
                     }
+                    TextSignFormat::ChaCha20 => {
+                        let path = opts.output.join("chacha20.txt");
+                        fs::write(path, &key[0])?;
+                    }
                 }
+            }
+            TextSubCommand::Encrypt(opts) => {
+                let encrypt = process_text_encrypt(&opts.input, &opts.key)?;
+                print!("{}", encrypt)
+            }
+            TextSubCommand::Decrypt(opts) => {
+                let decrypt = process_text_decrypt(&opts.input, &opts.key)?;
+                print!("{}", decrypt)
             }
         }
         Ok(())
@@ -80,16 +99,35 @@ pub struct TextVerifyOpts {
     #[clap(long, value_parser = parse_sign_format, default_value = "blake3")]
     pub format: TextSignFormat,
 }
+#[derive(Debug, Parser)]
+pub struct TextEncryptOpts {
+    /// 输入文件路径, 默认stdin
+    #[clap(short, long, value_parser=verify_file, default_value = "-")]
+    pub input: String,
+    /// 私钥文件路径
+    #[clap(short, long, value_parser=verify_file)]
+    pub key: String,
+}
 
+#[derive(Debug, Parser)]
+pub struct TextDecryptOpts {
+    /// 输出文件路径
+    #[clap(short, long, value_parser=verify_file, default_value = "-")]
+    pub input: String,
+    /// 私钥文件路径
+    #[clap(short, long, value_parser=verify_file)]
+    pub key: String,
+}
 #[derive(Debug, Copy, Clone, Parser)]
 pub enum TextSignFormat {
     Blake3,
     Ed25519,
+    ChaCha20,
 }
 
 #[derive(Debug, Parser)]
 pub struct TextKeyGenerateOpts {
-    /// optional: [blake3, ed25519]
+    /// optional: [blake3, ed25519, chacha20] default: blake3
     #[arg(short, long, default_value = "blake3", value_parser = parse_sign_format)]
     pub format: TextSignFormat,
     #[arg(short, long, value_parser = verify_path)]
@@ -107,6 +145,7 @@ impl FromStr for TextSignFormat {
         match s {
             "blake3" => Ok(TextSignFormat::Blake3),
             "ed25519" => Ok(TextSignFormat::Ed25519),
+            "chacha20" => Ok(TextSignFormat::ChaCha20),
             _ => Err("Invalid format"),
         }
     }
@@ -117,6 +156,7 @@ impl From<TextSignFormat> for &'static str {
         match format {
             TextSignFormat::Blake3 => "blake3",
             TextSignFormat::Ed25519 => "ed25519",
+            TextSignFormat::ChaCha20 => "chacha20",
         }
     }
 }

@@ -1,1 +1,3 @@
 /target
+/fixtures/cargo_toml.txt
+/fixtures/chacha20.txt
